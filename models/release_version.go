@@ -6,6 +6,6 @@ import "time"
 // To each version of song will be associate a unique version
 
 type ReleaseVersion struct {
-	Id        uint      `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
+	Id        uint      `json:"id" gorm:"primaryKey"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }

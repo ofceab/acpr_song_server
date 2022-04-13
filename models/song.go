@@ -1,8 +1,10 @@
 package models
 
+import "time"
+
 // Describe a song
 type Song struct {
-	Id string `json:"id"`
+	Id string `json:"id" gorm:"primaryKey;autoIncrement"`
 	// Title of the song
 	Title string `json:"title"`
 	// Lyrics of the song
@@ -10,5 +12,7 @@ type Song struct {
 	// Audio of the song
 	AudioUrl string `json:"audio_url"`
 	// Release version
-	ReleaseVersion string `json:"release_version"`
+	ReleaseVersion uint `json:"release_version"`
+	// Created at
+	CreatedAt time.Time `gorm:"autoCreateTime"`
 }
