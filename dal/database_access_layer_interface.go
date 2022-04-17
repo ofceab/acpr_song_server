@@ -2,33 +2,28 @@ package dal
 
 import "acpr_songs_server/models"
 
-// import "acpr_songs_server/models"
-
-// type IDatabaseAccessLayer interface {
-// 	IDataSaver
-// 	IDataRetriever
-// }
-
-// type Data interface {
-// 	models.ReleaseVersion | []models.ReleaseVersion | models.Song | []models.Song
-// }
-
-// // Allow to Save Data in store
-// type IDataSaver interface {
-// 	Save(d interface{}) error
-// }
-
-// type IDataRetriever interface {
-// 	Retrieve() (interface{}, error)
-// }
-
+// Define interfaction for getting song or deal with the song database
 type ISongDatabaseAccessLayer interface {
 	// Save song in store
-	SaveSong(s *models.Song) models.Song
+	SaveSong(s *models.Song, releaseVersion uint) (models.Song, error)
 	// Fetch songs
 	FetchSongs() []models.Song
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
-	FetchSongsPerVersionId() []models.Song
+	FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error)
 	// Remove song from a certain release
-	DeleteSong(s string) (models.Song, error)
+	DeleteSongByReleaseVersion(releaseVersion uint) (models.Song, error)
+	// Remove song no matter ReleasVersion
+	DeleteSong(songId uint) (models.Song, error)
+}
+
+// Define method in use for access song database
+type IReleaseVersionDatabaseAccessLayer interface {
+	// Create a ReleaseVersion
+	CreateReleaseVersion() (models.ReleaseVersion, error)
+	// Fetch all release version
+	FetchReleaseVersions() ([]models.ReleaseVersion, error)
+	// Delete a particular release version
+	DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error)
+	// Fetch latest Release Version
+	FetchLatestReleaseVersion() (models.ReleaseVersion, error)
 }

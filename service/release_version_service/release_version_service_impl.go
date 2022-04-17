@@ -38,14 +38,14 @@ func (r *releaseVersionServiceImpl) CreateReleaseVersion() models.ReleaseVersion
 
 	if r.currentLatestVersion != nil {
 		_currentLatestVersion = r.currentLatestVersion
-		_currentLatestVersion.Id += 1
+		_currentLatestVersion.ID += 1
 	} else {
 		*_currentLatestVersion = r.GetLatestReleaseVersion()
-		_currentLatestVersion.Id += 1
+		_currentLatestVersion.ID += 1
 	}
 
 	//TODO change it later
-	_newReleaseVersion := models.ReleaseVersion{Id: _currentLatestVersion.Id, CreatedAt: time.Now()}
+	_newReleaseVersion := models.ReleaseVersion{ID: _currentLatestVersion.ID, CreatedAt: time.Now()}
 	// Add in store
 	r.localDB = append(r.localDB, _newReleaseVersion)
 
