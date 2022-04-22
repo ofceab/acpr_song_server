@@ -3,14 +3,20 @@ package main
 import (
 	"acpr_songs_server/controllers/release_version_controller"
 	"acpr_songs_server/controllers/song_controller"
+	"acpr_songs_server/dal"
+	"acpr_songs_server/dal/mysql"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	_db := mysql.InitDb()
 	// init song controller
 	_songController := song_controller.New()
-	_releaseVersionController := release_version_controller.New()
+	// Init release version dependencies
+	_releaseVersionDAL := dal.NewIReleaseVersionDatabaseAccessLayer(_db)
+
+	_releaseVersionController := release_version_controller.New(_releaseVersionDAL)
 	router := gin.Default()
 
 	//Init Song routes
@@ -25,9 +31,14 @@ func main() {
 	router.DELETE("/songs/:releaseVersion/:songId", _songController.DeleteSong)
 
 	//Init ReleaseVersion routes
-	router.GET("/releaseVersion", _releaseVersionController.GetReleaseVersions)
-	router.GET("/releaseVersion/latest", _releaseVersionController.GetLatestReleaseVersion)
-	router.POST("/releaseVersion", _releaseVersionController.CreateReleaseVersion)
+	// Get all release versions
+	router.GET("/v1/releaseVersions", _releaseVersionController.GetReleaseVersions)
+	// Get latest release version
+	router.GET("/v1/releaseVersions/latest", _releaseVersionController.GetLatestReleaseVersion)
+	// Create a release version
+	router.POST("/v1/releaseVersions", _releaseVersionController.CreateReleaseVersion)
+	// Delete a release version
+	router.DELETE("/v1/releaseVersions/:releaseVersionId")
 
 	router.Run(":8080")
 }

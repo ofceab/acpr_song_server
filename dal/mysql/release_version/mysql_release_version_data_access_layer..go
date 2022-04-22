@@ -1,4 +1,4 @@
-package releaseversion
+package release_version
 
 import (
 	"acpr_songs_server/models"
@@ -7,13 +7,13 @@ import (
 )
 
 type MysqlReleaseVersionDataAccessLayer struct {
-	dbConnection *gorm.DB
+	DbConnection *gorm.DB
 }
 
 // Create a ReleaseVersion
 func (p *MysqlReleaseVersionDataAccessLayer) CreateReleaseVersion() (models.ReleaseVersion, error) {
 	_newReleaseVersion := new(models.ReleaseVersion)
-	_result := p.dbConnection.Model(&models.ReleaseVersion{}).Create(&_newReleaseVersion)
+	_result := p.DbConnection.Model(&models.ReleaseVersion{}).Create(&_newReleaseVersion)
 	if _result.Error != nil {
 		return models.ReleaseVersion{}, _result.Error
 	}
@@ -23,7 +23,7 @@ func (p *MysqlReleaseVersionDataAccessLayer) CreateReleaseVersion() (models.Rele
 // Fetch all release version
 func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersions() ([]models.ReleaseVersion, error) {
 	r := new([]models.ReleaseVersion)
-	_r := p.dbConnection.Order("Id DESC").Find(r)
+	_r := p.DbConnection.Order("Id DESC").Find(r)
 	if _r.Error != nil {
 		return nil, _r.Error
 	}
@@ -33,7 +33,7 @@ func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersions() ([]models.Re
 // Delete a particular release version
 func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
-	_r := p.dbConnection.Delete(r, releaseVersion)
+	_r := p.DbConnection.Delete(r, releaseVersion)
 	if _r.Error != nil {
 		return models.ReleaseVersion{}, _r.Error
 	}
@@ -43,7 +43,7 @@ func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion
 // Fetch latest Release Version
 func (p *MysqlReleaseVersionDataAccessLayer) FetchLatestReleaseVersion() (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
-	_r := p.dbConnection.Last(r)
+	_r := p.DbConnection.Last(r)
 	if _r.Error != nil {
 		return models.ReleaseVersion{}, _r.Error
 	}

@@ -4,7 +4,7 @@ import "time"
 
 // Describe a song
 type Song struct {
-	Id uint `json:"id" gorm:"primaryKey;autoIncrement"`
+	Id string `json:"id" gorm:"primaryKey;autoIncrement"`
 	// Title of the song
 	Title string `json:"title"`
 	// Lyrics of the song
@@ -12,7 +12,8 @@ type Song struct {
 	// Audio of the song
 	AudioUrl string `json:"audio_url"`
 	// Release version
-	ReleaseVersion uint `json:"release_version" gorm:"foreignKey"`
+	ReleaseVersionId uint           `json:"release_version"`
+	ReleaseVersion   ReleaseVersion `gorm:"foreignKey:ReleaseVersionId"`
 	// Created at
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 }

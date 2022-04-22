@@ -1,6 +1,7 @@
 package release_version_controller
 
 import (
+	"acpr_songs_server/dal"
 	"acpr_songs_server/service/release_version_service"
 
 	"github.com/gin-gonic/gin"
@@ -13,10 +14,12 @@ type IReleaseVersionController interface {
 	GetLatestReleaseVersion(c *gin.Context)
 	// Create a new Release Version
 	CreateReleaseVersion(c *gin.Context)
+	// Delete a relase version
+	DeleteReleaseVersion(c *gin.Context)
 }
 
-func New() IReleaseVersionController {
+func New(releaseVersionDal dal.IReleaseVersionDatabaseAccessLayer) IReleaseVersionController {
 	return &releaseVersionControllerImpl{
-		releaseVersionService: release_version_service.New(),
+		releaseVersionService: release_version_service.New(releaseVersionDal),
 	}
 }

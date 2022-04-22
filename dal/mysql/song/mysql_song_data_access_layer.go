@@ -65,7 +65,7 @@ func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, error) 
 func mergeSongs(s *[]models.Song, sn []models.Song) error {
 	for _, song := range sn {
 		for _, savedSong := range *s {
-			if song.ReleaseVersion > savedSong.ReleaseVersion && strings.EqualFold(song.Title, savedSong.Title) {
+			if song.ReleaseVersionId > savedSong.ReleaseVersionId && strings.EqualFold(song.Title, savedSong.Title) {
 				// Then add that item into the list
 				*s = append(*s, song)
 			}

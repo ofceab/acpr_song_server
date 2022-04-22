@@ -1,19 +1,24 @@
 package release_version_service
 
 import (
+	"acpr_songs_server/dal"
 	"acpr_songs_server/models"
-	"time"
+	"os"
 )
 
 type releaseVersionServiceImpl struct {
 	// Store of `ReleaseVersion`
-	localDB []models.ReleaseVersion
+	releaseVersionDataAccessLayer dal.IReleaseVersionDatabaseAccessLayer
 	// Current cached `ReleaseVersion`
 	currentLatestVersion *models.ReleaseVersion
 }
 
 func (r *releaseVersionServiceImpl) GetReleaseVersions() []models.ReleaseVersion {
-	return r.localDB
+	_r, _err := r.releaseVersionDataAccessLayer.FetchReleaseVersions()
+	if _err != nil {
+		return []models.ReleaseVersion{}
+	}
+	return _r
 }
 
 func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() models.ReleaseVersion {
@@ -22,36 +27,32 @@ func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() models.ReleaseVers
 		return *r.currentLatestVersion
 	} else {
 		// Query from DB
-		if len(r.localDB) > 0 {
-			r.setCurrentReleaseVersion(r.localDB[0])
+		_latestVersion, _ := r.releaseVersionDataAccessLayer.FetchLatestReleaseVersion()
+		// Set cached value
+		r.setCurrentReleaseVersion(_latestVersion)
 
-			return *r.currentLatestVersion
-		}
-
-		return models.ReleaseVersion{}
+		return *r.currentLatestVersion
 	}
 }
 
 func (r *releaseVersionServiceImpl) CreateReleaseVersion() models.ReleaseVersion {
 
-	_currentLatestVersion := new(models.ReleaseVersion)
-
-	if r.currentLatestVersion != nil {
-		_currentLatestVersion = r.currentLatestVersion
-		_currentLatestVersion.ID += 1
-	} else {
-		*_currentLatestVersion = r.GetLatestReleaseVersion()
-		_currentLatestVersion.ID += 1
+	_currentLatestVersion, err := r.releaseVersionDataAccessLayer.CreateReleaseVersion()
+	if err != nil {
+		os.Exit(1)
 	}
+	r.setCurrentReleaseVersion(_currentLatestVersion)
 
-	//TODO change it later
-	_newReleaseVersion := models.ReleaseVersion{ID: _currentLatestVersion.ID, CreatedAt: time.Now()}
-	// Add in store
-	r.localDB = append(r.localDB, _newReleaseVersion)
+	return _currentLatestVersion
+}
 
-	r.setCurrentReleaseVersion(*_currentLatestVersion)
+func (r *releaseVersionServiceImpl) DeleteReleaseVersion(releaseVersionId uint) models.ReleaseVersion {
+	_r, err := r.releaseVersionDataAccessLayer.DeleteReleaseVersion(releaseVersionId)
 
-	return _newReleaseVersion
+	if err != nil {
+		os.Exit(1)
+	}
+	return _r
 }
 
 func (r *releaseVersionServiceImpl) setCurrentReleaseVersion(p models.ReleaseVersion) int {

@@ -3,6 +3,7 @@ package release_version_controller
 import (
 	"acpr_songs_server/service/release_version_service"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,5 +29,16 @@ func (p *releaseVersionControllerImpl) GetLatestReleaseVersion(c *gin.Context) {
 func (p *releaseVersionControllerImpl) CreateReleaseVersion(c *gin.Context) {
 	_nVersion := p.releaseVersionService.CreateReleaseVersion()
 
+	c.JSON(http.StatusCreated, _nVersion)
+}
+
+func (p *releaseVersionControllerImpl) DeleteReleaseVersion(c *gin.Context) {
+	_releaseVersionId := c.Param("releaseVersionId")
+	_relCon, err := strconv.ParseUint(_releaseVersionId, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Provide a valid ReleaseVersionId"})
+		return
+	}
+	_nVersion := p.releaseVersionService.DeleteReleaseVersion(uint(_relCon))
 	c.JSON(http.StatusCreated, _nVersion)
 }
