@@ -33,7 +33,7 @@ func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersions() ([]models.Re
 // Delete a particular release version
 func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
-	_r := p.DbConnection.Delete(r, releaseVersion)
+	_r := p.DbConnection.Where("id = ?", releaseVersion).Delete(r)
 	if _r.Error != nil {
 		return models.ReleaseVersion{}, _r.Error
 	}

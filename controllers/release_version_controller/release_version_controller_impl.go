@@ -34,6 +34,7 @@ func (p *releaseVersionControllerImpl) CreateReleaseVersion(c *gin.Context) {
 
 func (p *releaseVersionControllerImpl) DeleteReleaseVersion(c *gin.Context) {
 	_releaseVersionId := c.Param("releaseVersionId")
+
 	_relCon, err := strconv.ParseUint(_releaseVersionId, 10, 32)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Provide a valid ReleaseVersionId"})

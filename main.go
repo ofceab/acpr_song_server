@@ -17,8 +17,8 @@ func main() {
 	_releaseVersionDAL := dal.NewIReleaseVersionDatabaseAccessLayer(_db)
 
 	_releaseVersionController := release_version_controller.New(_releaseVersionDAL)
-	router := gin.Default()
 
+	router := gin.Default()
 	//Init Song routes
 	// Get songs take latest version of songs
 
@@ -38,7 +38,7 @@ func main() {
 	// Create a release version
 	router.POST("/v1/releaseVersions", _releaseVersionController.CreateReleaseVersion)
 	// Delete a release version
-	router.DELETE("/v1/releaseVersions/:releaseVersionId")
+	router.DELETE("/v1/releaseVersions/:releaseVersionId", _releaseVersionController.DeleteReleaseVersion)
 
 	router.Run(":8080")
 }
