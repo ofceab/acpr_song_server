@@ -1,0 +1,81 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: "ACPR Song API"
+  description: "An API for providing songs of the message of the end Time preached by the Prophet of God William Marrion Branham"
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /v1/releaseVersions:
+    get:
+      description: Get all releases versions
+      responses:
+        200:
+          description: Successfully returned a list of release versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  required:
+                    - id
+                  properties:
+                    id:
+                      type: string
+                    created_at:
+                      type: string
+    post:
+      description: Create a new release version
+      responses:
+        201:
+          description: Successfully created release version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  created_at:
+                    type: string
+
+  /v1/releaseVersions/latest:
+    get:
+      description: Get latest release version
+      responses:
+        "200":
+          description: Successfully returned latest release version
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  created_at:
+                    type: string
+
+        "204":
+          description: No latest release release for now
+          
+  /v1/releaseVersions/{releaseVersionId}:
+    delete:
+      description: Delete release version having the passed id
+      responses:
+        200:
+          description: Successfully deleted release version having the passed id
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  created_at:
+                    type: string
+
+        204:
+          description: Unsuccessfully deleted release version, 'Cause no release version having the passed Id

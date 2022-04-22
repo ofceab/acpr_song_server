@@ -48,7 +48,7 @@ func (p *releaseVersionControllerImpl) DeleteReleaseVersion(c *gin.Context) {
 	_nVersion := p.releaseVersionService.DeleteReleaseVersion(uint(_relCon))
 
 	if _nVersion.ID != 0 {
-		c.JSON(http.StatusCreated, _nVersion)
+		c.JSON(http.StatusOK, _nVersion)
 		return
 	} else {
 		c.JSON(http.StatusNoContent, nil)
