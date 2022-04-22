@@ -21,8 +21,12 @@ func (p *releaseVersionControllerImpl) GetReleaseVersions(c *gin.Context) {
 // Get current latest release version
 func (p *releaseVersionControllerImpl) GetLatestReleaseVersion(c *gin.Context) {
 	_cVersion := p.releaseVersionService.GetLatestReleaseVersion()
-
-	c.JSON(http.StatusOK, _cVersion)
+	// check release version id if 0 then no last version yet
+	if _cVersion.ID != 0 {
+		c.JSON(http.StatusOK, _cVersion)
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }
 
 // Create a new Release Version
@@ -40,6 +44,13 @@ func (p *releaseVersionControllerImpl) DeleteReleaseVersion(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Provide a valid ReleaseVersionId"})
 		return
 	}
+
 	_nVersion := p.releaseVersionService.DeleteReleaseVersion(uint(_relCon))
-	c.JSON(http.StatusCreated, _nVersion)
+
+	if _nVersion.ID != 0 {
+		c.JSON(http.StatusCreated, _nVersion)
+		return
+	} else {
+		c.JSON(http.StatusNoContent, nil)
+	}
 }

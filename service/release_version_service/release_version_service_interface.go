@@ -19,6 +19,5 @@ type IReleaseVersionService interface {
 func New(releaseVersionDal dal.IReleaseVersionDatabaseAccessLayer) IReleaseVersionService {
 	return &releaseVersionServiceImpl{
 		releaseVersionDataAccessLayer: releaseVersionDal,
-		currentLatestVersion:          new(models.ReleaseVersion),
 	}
 }

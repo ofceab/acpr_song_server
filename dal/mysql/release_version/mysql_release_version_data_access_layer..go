@@ -23,7 +23,7 @@ func (p *MysqlReleaseVersionDataAccessLayer) CreateReleaseVersion() (models.Rele
 // Fetch all release version
 func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersions() ([]models.ReleaseVersion, error) {
 	r := new([]models.ReleaseVersion)
-	_r := p.DbConnection.Order("Id DESC").Find(r)
+	_r := p.DbConnection.Order("id DESC").Find(r)
 	if _r.Error != nil {
 		return nil, _r.Error
 	}
@@ -33,10 +33,12 @@ func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersions() ([]models.Re
 // Delete a particular release version
 func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
-	_r := p.DbConnection.Where("id = ?", releaseVersion).Delete(r)
-	if _r.Error != nil {
+	_r := p.DbConnection.Delete(r, releaseVersion)
+
+	if _r.RowsAffected == 0 {
 		return models.ReleaseVersion{}, _r.Error
 	}
+	r.ID = releaseVersion
 	return *r, nil
 }
 
@@ -44,7 +46,8 @@ func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion
 func (p *MysqlReleaseVersionDataAccessLayer) FetchLatestReleaseVersion() (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
 	_r := p.DbConnection.Last(r)
-	if _r.Error != nil {
+	if _r.RowsAffected == 0 {
+		// no Record found
 		return models.ReleaseVersion{}, _r.Error
 	}
 	return *r, nil

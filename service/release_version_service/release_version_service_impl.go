@@ -10,7 +10,6 @@ type releaseVersionServiceImpl struct {
 	// Store of `ReleaseVersion`
 	releaseVersionDataAccessLayer dal.IReleaseVersionDatabaseAccessLayer
 	// Current cached `ReleaseVersion`
-	currentLatestVersion *models.ReleaseVersion
 }
 
 func (r *releaseVersionServiceImpl) GetReleaseVersions() []models.ReleaseVersion {
@@ -22,17 +21,10 @@ func (r *releaseVersionServiceImpl) GetReleaseVersions() []models.ReleaseVersion
 }
 
 func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() models.ReleaseVersion {
-	if r.currentLatestVersion != nil {
-		// use cached value
-		return *r.currentLatestVersion
-	} else {
-		// Query from DB
-		_latestVersion, _ := r.releaseVersionDataAccessLayer.FetchLatestReleaseVersion()
-		// Set cached value
-		r.setCurrentReleaseVersion(_latestVersion)
+	// Query from DB
+	_latestVersion, _ := r.releaseVersionDataAccessLayer.FetchLatestReleaseVersion()
 
-		return *r.currentLatestVersion
-	}
+	return _latestVersion
 }
 
 func (r *releaseVersionServiceImpl) CreateReleaseVersion() models.ReleaseVersion {
@@ -41,7 +33,6 @@ func (r *releaseVersionServiceImpl) CreateReleaseVersion() models.ReleaseVersion
 	if err != nil {
 		os.Exit(1)
 	}
-	r.setCurrentReleaseVersion(_currentLatestVersion)
 
 	return _currentLatestVersion
 }
@@ -52,10 +43,6 @@ func (r *releaseVersionServiceImpl) DeleteReleaseVersion(releaseVersionId uint) 
 	if err != nil {
 		os.Exit(1)
 	}
-	return _r
-}
 
-func (r *releaseVersionServiceImpl) setCurrentReleaseVersion(p models.ReleaseVersion) int {
-	*r.currentLatestVersion = p
-	return 0
+	return _r
 }
