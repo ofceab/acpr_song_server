@@ -15,5 +15,5 @@ type Song struct {
 	ReleaseVersionId uint           `json:"release_version"`
 	ReleaseVersion   ReleaseVersion `gorm:"foreignKey:ReleaseVersionId"`
 	// Created at
-	CreatedAt time.Time `gorm:"autoCreateTime"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }

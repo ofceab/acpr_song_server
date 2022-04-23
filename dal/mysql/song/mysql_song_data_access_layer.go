@@ -9,13 +9,14 @@ import (
 )
 
 type MysqlSongDataAccessLayer struct {
-	dbConnection *gorm.DB
-	rDal         dal.IReleaseVersionDatabaseAccessLayer
+	DbConnection      *gorm.DB
+	ReleaseVersionDal dal.IReleaseVersionDatabaseAccessLayer
 }
 
 // Save song in store
 func (p *MysqlSongDataAccessLayer) SaveSong(s *models.Song, releaseVersion uint) (models.Song, error) {
-	_result := p.dbConnection.Model(&models.Song{}).Create(s)
+	s.ReleaseVersionId = releaseVersion
+	_result := p.DbConnection.Model(&models.Song{}).Create(s)
 	if _result.Error != nil {
 		return models.Song{}, _result.Error
 	}
@@ -27,7 +28,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 	// The idea for implementing the feature is to do a merge of all song's version
 
 	// Fetch release version
-	releaseVersions, err := s.rDal.FetchReleaseVersions()
+	releaseVersions, err := s.ReleaseVersionDal.FetchReleaseVersions()
 	if err == nil {
 		return []models.Song{}, err
 	}
@@ -45,7 +46,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 // Fetch all sounds per version id for fetching release song of a certain `version Id`
 func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error) {
 	songs := new([]models.Song)
-	_r := s.dbConnection.Where("ReleaseVersion = ?", releaseVersion).Find(songs)
+	_r := s.DbConnection.Where("ReleaseVersion = ?", releaseVersion).Find(songs)
 	if _r.Error != nil {
 		return []models.Song{}, _r.Error
 	}
@@ -54,7 +55,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) (
 
 func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, error) {
 	newSong := new(models.Song)
-	_r := s.dbConnection.Where("Id = ?", songId).Delete(newSong)
+	_r := s.DbConnection.Where("Id = ?", songId).Delete(newSong)
 	if _r.Error != nil {
 		return models.Song{}, _r.Error
 	}
@@ -62,7 +63,7 @@ func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, error) 
 }
 
 // Add into perform merge of song
-func mergeSongs(s *[]models.Song, sn []models.Song) error {
+func mergeSongs(s *[]models.Song, sn []models.Song) {
 	for _, song := range sn {
 		for _, savedSong := range *s {
 			if song.ReleaseVersionId > savedSong.ReleaseVersionId && strings.EqualFold(song.Title, savedSong.Title) {
@@ -71,5 +72,4 @@ func mergeSongs(s *[]models.Song, sn []models.Song) error {
 			}
 		}
 	}
-	return nil
 }
