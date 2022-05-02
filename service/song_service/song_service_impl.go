@@ -2,56 +2,59 @@ package song_service
 
 import (
 	"acpr_songs_server/core/constants"
+	"acpr_songs_server/dal/dal_interfaces"
 	"acpr_songs_server/models"
-	"fmt"
+	"acpr_songs_server/service/release_version_service"
 )
 
 // An implementation of `ISongService`
 type songServiceImpl struct {
 	// base api for query songs
-	apiBaseUrl string
-	localDB    []models.Song
-	lastIndex  int
+	songDal               dal_interfaces.ISongDatabaseAccessLayer
+	releaseVersionService release_version_service.IReleaseVersionService
 }
 
-func (s *songServiceImpl) FetchSongs() []models.Song {
-	return s.localDB // for now an empty list
+func (s *songServiceImpl) FetchSongs() ([]models.Song, error) {
+	songs, err := s.songDal.FetchSongs()
+	if err != nil {
+		return []models.Song{}, err
+	}
+	return songs, nil
 }
 
-func (s *songServiceImpl) FetchSongsPerVersionId() []models.Song {
-	return (*s).localDB // for now an empty list
+func (s *songServiceImpl) FetchSongsPerVersionId(sv uint) ([]models.Song, error) {
+	_songs, err := s.songDal.FetchSongsPerVersionId(sv)
+
+	if err != nil {
+		return []models.Song{}, err
+	}
+	return _songs, nil
 }
 
-func (s *songServiceImpl) AddSong(sn *models.Song, releaseVersion string) models.Song {
-	// Generate key
-	//TODO generate key
-	sn.Id = "index_" + fmt.Sprint(s.lastIndex)
-	s.lastIndex++
+func (s *songServiceImpl) AddSong(sn *models.Song, releaseVersion uint) (models.Song, error) {
 
 	if releaseVersion == constants.LATEST_RELEASE_KEY {
-		// Use latest version
-		//TODO
+		_r, err := s.releaseVersionService.GetLatestReleaseVersion()
+		if err != nil {
+			return models.Song{}, err
+		}
+		_sn, _err := s.songDal.SaveSong(sn, _r.ID)
+		if _err != nil {
+			return models.Song{}, _err
+		}
+		return _sn, nil
 	}
-
-	s.localDB = append(s.localDB, *sn)
-	return *sn
+	_s, _err := s.songDal.SaveSong(sn, releaseVersion)
+	if _err != nil {
+		return models.Song{}, _err
+	}
+	return _s, nil
 }
 
-func (s *songServiceImpl) DeleteSong(i string) (models.Song, error) {
-	song := new(models.Song)
-
-	var newSongList []models.Song
-
-	for _, _song := range s.localDB {
-		if _song.Id != i {
-			newSongList = append(newSongList, _song)
-		} else {
-			*song = _song
-		}
+func (s *songServiceImpl) DeleteSong(sId uint) (models.Song, error) {
+	_s, _err := s.songDal.DeleteSong(sId)
+	if _err != nil {
+		return models.Song{}, _err
 	}
-	if song != nil {
-		return *song, nil
-	}
-
-	return *song, fmt.Errorf(constants.ITEM_NOT_FOUND)
+	return _s, nil
 }

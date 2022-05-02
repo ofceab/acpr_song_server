@@ -3,7 +3,6 @@ package release_version_service
 import (
 	"acpr_songs_server/dal/dal_interfaces"
 	"acpr_songs_server/models"
-	"os"
 )
 
 type releaseVersionServiceImpl struct {
@@ -12,37 +11,39 @@ type releaseVersionServiceImpl struct {
 	// Current cached `ReleaseVersion`
 }
 
-func (r *releaseVersionServiceImpl) GetReleaseVersions() []models.ReleaseVersion {
+func (r *releaseVersionServiceImpl) GetReleaseVersions() ([]models.ReleaseVersion, error) {
 	_r, _err := r.releaseVersionDataAccessLayer.FetchReleaseVersions()
 	if _err != nil {
-		return []models.ReleaseVersion{}
+		return []models.ReleaseVersion{}, _err
 	}
-	return _r
+	return _r, nil
 }
 
-func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() models.ReleaseVersion {
+func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() (models.ReleaseVersion, error) {
 	// Query from DB
-	_latestVersion, _ := r.releaseVersionDataAccessLayer.FetchLatestReleaseVersion()
-
-	return _latestVersion
+	_latestVersion, _err := r.releaseVersionDataAccessLayer.FetchLatestReleaseVersion()
+	if _err != nil {
+		return models.ReleaseVersion{}, _err
+	}
+	return _latestVersion, nil
 }
 
-func (r *releaseVersionServiceImpl) CreateReleaseVersion() models.ReleaseVersion {
+func (r *releaseVersionServiceImpl) CreateReleaseVersion() (models.ReleaseVersion, error) {
 
 	_currentLatestVersion, err := r.releaseVersionDataAccessLayer.CreateReleaseVersion()
 	if err != nil {
-		os.Exit(1)
+		return models.ReleaseVersion{}, err
 	}
 
-	return _currentLatestVersion
+	return _currentLatestVersion, nil
 }
 
-func (r *releaseVersionServiceImpl) DeleteReleaseVersion(releaseVersionId uint) models.ReleaseVersion {
+func (r *releaseVersionServiceImpl) DeleteReleaseVersion(releaseVersionId uint) (models.ReleaseVersion, error) {
 	_r, err := r.releaseVersionDataAccessLayer.DeleteReleaseVersion(releaseVersionId)
 
 	if err != nil {
-		os.Exit(1)
+		return models.ReleaseVersion{}, err
 	}
 
-	return _r
+	return _r, nil
 }

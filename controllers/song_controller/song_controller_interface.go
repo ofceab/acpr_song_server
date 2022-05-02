@@ -1,6 +1,8 @@
 package song_controller
 
 import (
+	"acpr_songs_server/dal/dal_interfaces"
+	"acpr_songs_server/service/release_version_service"
 	"acpr_songs_server/service/song_service"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +21,7 @@ type ISongController interface {
 }
 
 // Create new instance of `ISongController`
-func New() ISongController {
+func New(songDal dal_interfaces.ISongDatabaseAccessLayer, releaseVersionService release_version_service.IReleaseVersionService) ISongController {
 	return &songControllerImpl{
-		songService: song_service.New()}
+		songService: song_service.New(songDal, releaseVersionService)}
 }

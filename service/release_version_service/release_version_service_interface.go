@@ -7,13 +7,13 @@ import (
 
 type IReleaseVersionService interface {
 	// Get all release version
-	GetReleaseVersions() []models.ReleaseVersion
+	GetReleaseVersions() ([]models.ReleaseVersion, error)
 	// Get current latest release version
-	GetLatestReleaseVersion() models.ReleaseVersion
+	GetLatestReleaseVersion() (models.ReleaseVersion, error)
 	// Create a new Release Version
-	CreateReleaseVersion() models.ReleaseVersion
+	CreateReleaseVersion() (models.ReleaseVersion, error)
 	// Delete a release version
-	DeleteReleaseVersion(releaseVersionId uint) models.ReleaseVersion
+	DeleteReleaseVersion(releaseVersionId uint) (models.ReleaseVersion, error)
 }
 
 func New(releaseVersionDal dal_interfaces.IReleaseVersionDatabaseAccessLayer) IReleaseVersionService {

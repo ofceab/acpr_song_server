@@ -11,6 +11,6 @@ const RELEASE_VERSION_KEY = "releaseVersion"
 // Song Id Key
 const SONG_ID_KEY = "songId"
 
-const LATEST_RELEASE_KEY = "latest"
+const LATEST_RELEASE_KEY = 0
 
 const API_BASE_URL = "http://localhost/"

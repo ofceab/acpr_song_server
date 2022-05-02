@@ -2,11 +2,10 @@ package song_controller
 
 import (
 	"acpr_songs_server/core/constants"
-	customErros "acpr_songs_server/errors"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/song_service"
 	"net/http"
-	"strings"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -18,61 +17,63 @@ type songControllerImpl struct {
 // Implementing ISongController
 
 func (s *songControllerImpl) FetchSongs(c *gin.Context) {
-	songs := s.songService.FetchSongs()
+	songs, err := s.songService.FetchSongs()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	// Send result
 	c.JSON(http.StatusOK, songs)
 }
 
 func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
-	songs := s.songService.FetchSongsPerVersionId()
+	reVersion, _err := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
+	if _err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid releaseVersion"})
+		return
+	}
+
+	songs, err := s.songService.FetchSongsPerVersionId(uint(reVersion))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 	// Send result
 	c.JSON(http.StatusOK, songs)
 }
 
 func (s *songControllerImpl) AddSong(c *gin.Context) {
-	releaseVersion := c.Param(constants.RELEASE_VERSION_KEY)
+	releaseVersion, _convErr := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
+	if _convErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid releaseVersion"})
+		return
+	}
+
 	var song models.Song
 	if err := c.ShouldBindJSON(&song); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	result := s.songService.AddSong(&song, releaseVersion)
+	result, _err := s.songService.AddSong(&song, uint(releaseVersion))
+	if _err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
+		return
+	}
 	c.JSON(http.StatusCreated, result)
 }
 
 func (s *songControllerImpl) DeleteSong(c *gin.Context) {
-	releaseVersion, songId := c.Param(constants.RELEASE_VERSION_KEY), c.Param(constants.SONG_ID_KEY)
-
-	msg, err := ValidateDeleteSongParam(&releaseVersion, &songId)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, msg)
+	songId, _conErr := strconv.ParseUint(c.Param(constants.SONG_ID_KEY), 10, 32)
+	if _conErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid songId"})
 		return
 	}
 
-	var song models.Song
-	if err := c.ShouldBindJSON(&song); err != nil {
-		c.JSON(http.StatusBadRequest, err)
+	result, _err := s.songService.DeleteSong(uint(songId))
+	if _err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
 		return
 	}
-
-	result := s.songService.AddSong(&song, releaseVersion)
 	c.JSON(http.StatusCreated, result)
-}
-
-func ValidateDeleteSongParam(releaseVersion *string, songId *string) (message string, err error) {
-	var _msg []string
-	if *releaseVersion == constants.EMPTY_SPACE {
-		_msg = append(_msg, "releaseVersion is missing")
-	}
-	if *songId == constants.EMPTY_SPACE {
-		_msg = append(_msg, "songId is missing")
-	}
-
-	if len(_msg) != 0 {
-		_msgStringify := strings.Join(_msg, ",")
-		_error := customErros.InvalidateDeleteRequest{}
-		return _msgStringify, &_error
-	}
-	return "", nil
 }

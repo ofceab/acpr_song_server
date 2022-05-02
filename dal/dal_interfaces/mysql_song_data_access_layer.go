@@ -45,7 +45,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 // Fetch all sounds per version id for fetching release song of a certain `version Id`
 func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error) {
 	songs := new([]models.Song)
-	_r := s.DbConnection.Where("release_version_id = ?", releaseVersion).Find(songs)
+	_r := s.DbConnection.Find(songs, models.Song{ReleaseVersionId: releaseVersion})
 	if _r.Error != nil {
 		return []models.Song{}, _r.Error
 	}
@@ -67,8 +67,24 @@ func mergeSongs(s *[]models.Song, sn []models.Song) {
 		for _, savedSong := range *s {
 			if song.ReleaseVersionId > savedSong.ReleaseVersionId && strings.EqualFold(song.Title, savedSong.Title) {
 				// Then add that item into the list
-				*s = append(*s, song)
+				addSongInList(s, song)
 			}
+
 		}
 	}
+}
+
+// Merge song
+func addSongInList(s *[]models.Song, sn models.Song) {
+	_tempSngs := []models.Song{}
+
+	for _, _song := range *s {
+		if _song.Id != sn.Id {
+			_tempSngs = append(_tempSngs, _song)
+		}
+	}
+	_tempSngs = append(_tempSngs, sn)
+
+	// update the song slice
+	*s = _tempSngs
 }
