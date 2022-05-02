@@ -8,4 +8,4 @@ An API for providing songs of the message of the end Time preached by the Prophe
 
 ## Acknowlegdgement
 
-Thanks The loard JESUS-CHRIST for his mercy
+Thanks to My Lord JESUS-CHRIST for his mercy
