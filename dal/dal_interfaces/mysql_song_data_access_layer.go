@@ -32,7 +32,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 		return []models.Song{}, err
 	}
 
-	fullSongs := make([]models.Song, 99999)
+	fullSongs := []models.Song{}
 
 	// Fetch songs by release version
 	for _, _releaseVersion := range releaseVersions {
