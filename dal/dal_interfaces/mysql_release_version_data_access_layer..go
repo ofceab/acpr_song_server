@@ -1,4 +1,4 @@
-package release_version
+package dal_interfaces
 
 import (
 	"acpr_songs_server/models"

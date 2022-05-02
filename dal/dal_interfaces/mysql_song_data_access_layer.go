@@ -1,7 +1,6 @@
-package dal
+package dal_interfaces
 
 import (
-	"acpr_songs_server/dal"
 	"acpr_songs_server/models"
 	"strings"
 
@@ -10,7 +9,7 @@ import (
 
 type MysqlSongDataAccessLayer struct {
 	DbConnection      *gorm.DB
-	ReleaseVersionDal dal.IReleaseVersionDatabaseAccessLayer
+	ReleaseVersionDal IReleaseVersionDatabaseAccessLayer
 }
 
 // Save song in store
@@ -29,7 +28,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 
 	// Fetch release version
 	releaseVersions, err := s.ReleaseVersionDal.FetchReleaseVersions()
-	if err == nil {
+	if err != nil {
 		return []models.Song{}, err
 	}
 
@@ -46,7 +45,7 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 // Fetch all sounds per version id for fetching release song of a certain `version Id`
 func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error) {
 	songs := new([]models.Song)
-	_r := s.DbConnection.Where("ReleaseVersion = ?", releaseVersion).Find(songs)
+	_r := s.DbConnection.Where("release_version_id = ?", releaseVersion).Find(songs)
 	if _r.Error != nil {
 		return []models.Song{}, _r.Error
 	}
@@ -55,8 +54,8 @@ func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) (
 
 func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, error) {
 	newSong := new(models.Song)
-	_r := s.DbConnection.Where("Id = ?", songId).Delete(newSong)
-	if _r.Error != nil {
+	_r := s.DbConnection.Delete(newSong, songId)
+	if _r.RowsAffected == 0 {
 		return models.Song{}, _r.Error
 	}
 	return *newSong, nil

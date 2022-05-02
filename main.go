@@ -3,7 +3,7 @@ package main
 import (
 	"acpr_songs_server/controllers/release_version_controller"
 	"acpr_songs_server/controllers/song_controller"
-	"acpr_songs_server/dal"
+	"acpr_songs_server/dal/dal_interfaces"
 	"acpr_songs_server/dal/mysql"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ func main() {
 	// init song controller
 	_songController := song_controller.New()
 	// Init release version dependencies
-	_releaseVersionDAL := dal.NewIReleaseVersionDatabaseAccessLayer(_db)
+	_releaseVersionDAL := dal_interfaces.NewIReleaseVersionDatabaseAccessLayer(_db)
 
 	_releaseVersionController := release_version_controller.New(_releaseVersionDAL)
 

@@ -5,7 +5,7 @@ import (
 	customErros "acpr_songs_server/errors"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/song_service"
-	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -20,46 +20,44 @@ type songControllerImpl struct {
 func (s *songControllerImpl) FetchSongs(c *gin.Context) {
 	songs := s.songService.FetchSongs()
 	// Send result
-	c.JSON(200, songs)
+	c.JSON(http.StatusOK, songs)
 }
 
 func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
 	songs := s.songService.FetchSongsPerVersionId()
 	// Send result
-	c.JSON(200, songs)
+	c.JSON(http.StatusOK, songs)
 }
 
 func (s *songControllerImpl) AddSong(c *gin.Context) {
 	releaseVersion := c.Param(constants.RELEASE_VERSION_KEY)
 	var song models.Song
 	if err := c.ShouldBindJSON(&song); err != nil {
-		c.JSON(401, err)
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	result := s.songService.AddSong(&song, releaseVersion)
-	c.JSON(201, result)
+	c.JSON(http.StatusCreated, result)
 }
 
 func (s *songControllerImpl) DeleteSong(c *gin.Context) {
 	releaseVersion, songId := c.Param(constants.RELEASE_VERSION_KEY), c.Param(constants.SONG_ID_KEY)
 
-	fmt.Printf("rel %s, sonId %s", releaseVersion, songId)
-
 	msg, err := ValidateDeleteSongParam(&releaseVersion, &songId)
 	if err != nil {
-		c.JSON(401, msg)
+		c.JSON(http.StatusBadRequest, msg)
 		return
 	}
 
 	var song models.Song
 	if err := c.ShouldBindJSON(&song); err != nil {
-		c.JSON(401, err)
+		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
 	result := s.songService.AddSong(&song, releaseVersion)
-	c.JSON(201, result)
+	c.JSON(http.StatusCreated, result)
 }
 
 func ValidateDeleteSongParam(releaseVersion *string, songId *string) (message string, err error) {

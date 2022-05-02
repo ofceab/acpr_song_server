@@ -1,7 +1,7 @@
 package release_version_service
 
 import (
-	"acpr_songs_server/dal"
+	"acpr_songs_server/dal/dal_interfaces"
 	"acpr_songs_server/models"
 )
 
@@ -16,7 +16,7 @@ type IReleaseVersionService interface {
 	DeleteReleaseVersion(releaseVersionId uint) models.ReleaseVersion
 }
 
-func New(releaseVersionDal dal.IReleaseVersionDatabaseAccessLayer) IReleaseVersionService {
+func New(releaseVersionDal dal_interfaces.IReleaseVersionDatabaseAccessLayer) IReleaseVersionService {
 	return &releaseVersionServiceImpl{
 		releaseVersionDataAccessLayer: releaseVersionDal,
 	}
