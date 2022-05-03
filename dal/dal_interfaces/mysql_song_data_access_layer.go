@@ -4,11 +4,12 @@ import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
 
-var OMIT_SONG_FIELD = []string{"Id", "CreatedAt"}
+var OMIT_SONG_FIELD = []string{"ID"}
 
 type MysqlSongDataAccessLayer struct {
 	DbConnection      *gorm.DB
@@ -17,7 +18,7 @@ type MysqlSongDataAccessLayer struct {
 
 // Save song in store
 func (p *MysqlSongDataAccessLayer) SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error) {
-	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion}
+	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion, CreatedAt: time.Now()}
 	_result := p.DbConnection.Omit(OMIT_SONG_FIELD...).Create(&_s)
 	if _result.Error != nil {
 		return models.Song{}, _result.Error
@@ -82,7 +83,7 @@ func addSongInList(s *[]models.Song, sn models.Song) {
 	_tempSngs := []models.Song{}
 
 	for _, _song := range *s {
-		if _song.Id != sn.Id {
+		if _song.ID != sn.ID {
 			_tempSngs = append(_tempSngs, _song)
 		}
 	}
