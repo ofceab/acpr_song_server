@@ -43,6 +43,17 @@ func (p *MysqlReleaseVersionDataAccessLayer) DeleteReleaseVersion(releaseVersion
 }
 
 // Fetch latest Release Version
+func (p *MysqlReleaseVersionDataAccessLayer) FetchReleaseVersionById(id uint) (models.ReleaseVersion, error) {
+	r := new(models.ReleaseVersion)
+	_r := p.DbConnection.First(r, id)
+	if _r.RowsAffected == 0 {
+		// no Record found
+		return models.ReleaseVersion{}, _r.Error
+	}
+	return *r, nil
+}
+
+// Fetch latest Release Version
 func (p *MysqlReleaseVersionDataAccessLayer) FetchLatestReleaseVersion() (models.ReleaseVersion, error) {
 	r := new(models.ReleaseVersion)
 	_r := p.DbConnection.Last(r)

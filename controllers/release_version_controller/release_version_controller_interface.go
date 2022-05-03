@@ -9,6 +9,7 @@ import (
 type IReleaseVersionController interface {
 	// Get all release version
 	GetReleaseVersions(c *gin.Context)
+	GetReleaseVersionById(c *gin.Context)
 	// Get current latest release version
 	GetLatestReleaseVersion(c *gin.Context)
 	// Create a new Release Version

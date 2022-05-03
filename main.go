@@ -40,10 +40,12 @@ func main() {
 	router.GET("/v1/releaseVersions", _releaseVersionController.GetReleaseVersions)
 	// Get latest release version
 	router.GET("/v1/releaseVersions/latest", _releaseVersionController.GetLatestReleaseVersion)
+	// Get release version info based on id
+	router.GET("/v1/releaseVersions/:releaseVersion", _releaseVersionController.GetReleaseVersionById)
 	// Create a release version
 	router.POST("/v1/releaseVersions", _releaseVersionController.CreateReleaseVersion)
 	// Delete a release version
 	router.DELETE("/v1/releaseVersions/:releaseVersionId", _releaseVersionController.DeleteReleaseVersion)
 
-	router.Run(":8080")
+	router.Run(":8081")
 }

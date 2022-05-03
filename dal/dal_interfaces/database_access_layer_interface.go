@@ -27,6 +27,8 @@ type IReleaseVersionDatabaseAccessLayer interface {
 	FetchReleaseVersions() ([]models.ReleaseVersion, error)
 	// Delete a particular release version
 	DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error)
+	// Fetch release version per Id
+	FetchReleaseVersionById(id uint) (models.ReleaseVersion, error)
 	// Fetch latest Release Version
 	FetchLatestReleaseVersion() (models.ReleaseVersion, error)
 }

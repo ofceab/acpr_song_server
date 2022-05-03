@@ -18,6 +18,13 @@ func (r *releaseVersionServiceImpl) GetReleaseVersions() ([]models.ReleaseVersio
 	}
 	return _r, nil
 }
+func (r *releaseVersionServiceImpl) GetReleaseVersionById(id uint) (models.ReleaseVersion, error) {
+	_r, _err := r.releaseVersionDataAccessLayer.FetchReleaseVersionById(id)
+	if _err != nil {
+		return models.ReleaseVersion{}, _err
+	}
+	return _r, nil
+}
 
 func (r *releaseVersionServiceImpl) GetLatestReleaseVersion() (models.ReleaseVersion, error) {
 	// Query from DB

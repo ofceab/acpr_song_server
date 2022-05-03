@@ -8,6 +8,8 @@ import (
 type IReleaseVersionService interface {
 	// Get all release version
 	GetReleaseVersions() ([]models.ReleaseVersion, error)
+	// Get release version of a certain Id
+	GetReleaseVersionById(id uint) (models.ReleaseVersion, error)
 	// Get current latest release version
 	GetLatestReleaseVersion() (models.ReleaseVersion, error)
 	// Create a new Release Version

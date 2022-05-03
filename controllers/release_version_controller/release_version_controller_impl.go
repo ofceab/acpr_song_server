@@ -22,6 +22,20 @@ func (p *releaseVersionControllerImpl) GetReleaseVersions(c *gin.Context) {
 	c.JSON(http.StatusOK, _versions)
 }
 
+func (p *releaseVersionControllerImpl) GetReleaseVersionById(c *gin.Context) {
+	_rId, _convErr := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
+
+	if _convErr != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Provide a valid ReleaseVersionId"})
+	}
+	_versions, _err := p.releaseVersionService.GetReleaseVersionById(uint(_rId))
+	if _err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, _versions)
+}
+
 // Get current latest release version
 func (p *releaseVersionControllerImpl) GetLatestReleaseVersion(c *gin.Context) {
 	_cVersion, _err := p.releaseVersionService.GetLatestReleaseVersion()
