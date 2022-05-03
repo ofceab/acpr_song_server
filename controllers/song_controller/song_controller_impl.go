@@ -2,7 +2,7 @@ package song_controller
 
 import (
 	"acpr_songs_server/core/constants"
-	"acpr_songs_server/models"
+	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/service/song_service"
 	"net/http"
 	"strconv"
@@ -49,13 +49,13 @@ func (s *songControllerImpl) AddSong(c *gin.Context) {
 		return
 	}
 
-	var song models.Song
-	if err := c.ShouldBindJSON(&song); err != nil {
+	var songData dataformat.CreateSong
+	if err := c.ShouldBindJSON(&songData); err != nil {
 		c.JSON(http.StatusBadRequest, err)
 		return
 	}
 
-	result, _err := s.songService.AddSong(&song, uint(releaseVersion))
+	result, _err := s.songService.AddSong(&songData, uint(releaseVersion))
 	if _err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
 		return

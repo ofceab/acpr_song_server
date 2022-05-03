@@ -1,11 +1,14 @@
 package dal_interfaces
 
 import (
+	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"strings"
 
 	"gorm.io/gorm"
 )
+
+var OMIT_SONG_FIELD = []string{"Id", "CreatedAt"}
 
 type MysqlSongDataAccessLayer struct {
 	DbConnection      *gorm.DB
@@ -13,13 +16,13 @@ type MysqlSongDataAccessLayer struct {
 }
 
 // Save song in store
-func (p *MysqlSongDataAccessLayer) SaveSong(s *models.Song, releaseVersion uint) (models.Song, error) {
-	s.ReleaseVersionId = releaseVersion
-	_result := p.DbConnection.Model(&models.Song{}).Create(s)
+func (p *MysqlSongDataAccessLayer) SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error) {
+	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion}
+	_result := p.DbConnection.Omit(OMIT_SONG_FIELD...).Create(&_s)
 	if _result.Error != nil {
 		return models.Song{}, _result.Error
 	}
-	return *s, nil
+	return _s, nil
 }
 
 // Fetch songs

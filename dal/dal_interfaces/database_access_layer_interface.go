@@ -1,6 +1,7 @@
 package dal_interfaces
 
 import (
+	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 
 	"gorm.io/gorm"
@@ -9,7 +10,7 @@ import (
 // Define interfaction for getting song or deal with the song database
 type ISongDatabaseAccessLayer interface {
 	// Save song in store
-	SaveSong(s *models.Song, releaseVersion uint) (models.Song, error)
+	SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error)
 	// Fetch songs
 	FetchSongs() ([]models.Song, error)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`

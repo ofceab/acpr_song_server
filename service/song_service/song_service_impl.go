@@ -3,6 +3,7 @@ package song_service
 import (
 	"acpr_songs_server/core/constants"
 	"acpr_songs_server/dal/dal_interfaces"
+	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/release_version_service"
 )
@@ -31,7 +32,7 @@ func (s *songServiceImpl) FetchSongsPerVersionId(sv uint) ([]models.Song, error)
 	return _songs, nil
 }
 
-func (s *songServiceImpl) AddSong(sn *models.Song, releaseVersion uint) (models.Song, error) {
+func (s *songServiceImpl) AddSong(sn *dataformat.CreateSong, releaseVersion uint) (models.Song, error) {
 
 	if releaseVersion == constants.LATEST_RELEASE_KEY {
 		_r, err := s.releaseVersionService.GetLatestReleaseVersion()

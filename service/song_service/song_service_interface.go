@@ -2,6 +2,7 @@ package song_service
 
 import (
 	"acpr_songs_server/dal/dal_interfaces"
+	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/release_version_service"
 )
@@ -14,7 +15,7 @@ type ISongService interface {
 	FetchSongsPerVersionId(sv uint) ([]models.Song, error)
 
 	// Add song with
-	AddSong(s *models.Song, relaseVersion uint) (models.Song, error)
+	AddSong(s *dataformat.CreateSong, relaseVersion uint) (models.Song, error)
 	// Remove song from a certain release
 	DeleteSong(sId uint) (models.Song, error)
 }
