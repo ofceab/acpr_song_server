@@ -26,26 +26,28 @@ func main() {
 	router := gin.Default()
 	//Init Song routes
 	// Get songs take latest version of songs
+	v1 := router.Group("/v1")
+	{
+		v1.GET("/songs", _songController.FetchSongs)
+		// Get songs by release version
+		v1.GET("/songs/:releaseVersion", _songController.FetchSongsPerVersionId)
+		// Add songs on a certain release version
+		v1.POST("/songs/:releaseVersion", _songController.AddSong)
+		// Delete songs on a certain release
+		v1.DELETE("/songs/:songId", _songController.DeleteSong)
 
-	router.GET("/v1/songs", _songController.FetchSongs)
-	// Get songs by release version
-	router.GET("/v1/songs/:releaseVersion", _songController.FetchSongsPerVersionId)
-	// Add songs on a certain release version
-	router.POST("/v1/songs/:releaseVersion", _songController.AddSong)
-	// Delete songs on a certain release
-	router.DELETE("/v1/songs/:songId", _songController.DeleteSong)
-
-	//Init ReleaseVersion routes
-	// Get all release versions
-	router.GET("/v1/releaseVersions", _releaseVersionController.GetReleaseVersions)
-	// Get latest release version
-	router.GET("/v1/releaseVersions/latest", _releaseVersionController.GetLatestReleaseVersion)
-	// Get release version info based on id
-	router.GET("/v1/releaseVersions/:releaseVersion", _releaseVersionController.GetReleaseVersionById)
-	// Create a release version
-	router.POST("/v1/releaseVersions", _releaseVersionController.CreateReleaseVersion)
-	// Delete a release version
-	router.DELETE("/v1/releaseVersions/:releaseVersionId", _releaseVersionController.DeleteReleaseVersion)
+		//Init ReleaseVersion routes
+		// Get all release versions
+		v1.GET("/releaseVersions", _releaseVersionController.GetReleaseVersions)
+		// Get latest release version
+		v1.GET("/releaseVersions/latest", _releaseVersionController.GetLatestReleaseVersion)
+		// Get release version info based on id
+		v1.GET("/releaseVersions/:releaseVersion", _releaseVersionController.GetReleaseVersionById)
+		// Create a release version
+		v1.POST("/releaseVersions", _releaseVersionController.CreateReleaseVersion)
+		// Delete a release version
+		v1.DELETE("/releaseVersions/:releaseVersionId", _releaseVersionController.DeleteReleaseVersion)
+	}
 
 	router.Run(":8081")
 }
