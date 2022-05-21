@@ -6,6 +6,7 @@ import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/release_version_service"
+	"fmt"
 )
 
 // An implementation of `ISongService`
@@ -21,6 +22,31 @@ func (s *songServiceImpl) FetchSongs() ([]models.Song, error) {
 		return []models.Song{}, err
 	}
 	return songs, nil
+}
+
+func (s *songServiceImpl) UpdateSong(p *dataformat.UpdateSong, releaseVersion uint) (models.Song, error) {
+	// Retrieve first releases versions
+	_releaseVersions, _err := s.releaseVersionService.GetReleaseVersions()
+	if _err != nil {
+		return models.Song{}, _err
+	}
+
+	_rvExist := false
+	for _, _rv := range _releaseVersions {
+		if _rv.ID == releaseVersion {
+			_rvExist = true
+		}
+	}
+
+	if !_rvExist {
+		return models.Song{}, fmt.Errorf("release version provided doesn't exist")
+	}
+
+	song, err := s.songDal.UpdateSong(p, releaseVersion)
+	if err != nil {
+		return models.Song{}, err
+	}
+	return song, nil
 }
 
 func (s *songServiceImpl) FetchSongsPerVersionId(sv uint) ([]models.Song, error) {

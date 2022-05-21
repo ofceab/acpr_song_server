@@ -3,8 +3,6 @@ package dal_interfaces
 import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
-	"fmt"
-	"strings"
 	"time"
 
 	"github.com/gofrs/uuid"
@@ -33,32 +31,30 @@ func (p *MysqlSongDataAccessLayer) SaveSong(s *dataformat.CreateSong, releaseVer
 	return _s, nil
 }
 
+func (p *MysqlSongDataAccessLayer) UpdateSong(s *dataformat.UpdateSong, releaseVersion uint) (models.Song, error) {
+	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion, CreatedAt: time.Now(), SongUniqueId: s.SongUniqueId}
+	_result := p.DbConnection.Omit(OMIT_SONG_FIELD...).Create(&_s)
+	if _result.Error != nil {
+		return models.Song{}, _result.Error
+	}
+	return _s, nil
+}
+
 // Fetch songs
 func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 	// The idea for implementing the feature is to do a merge of all song's version
 
-	// Fetch release version
-	releaseVersions, err := s.ReleaseVersionDal.FetchReleaseVersions()
-
-	if err != nil {
-		return []models.Song{}, err
-	}
-
 	// Retrieve all songs
 	fullSongs, _err := s.fetchAllSongs()
-
 	if _err != nil {
 		return []models.Song{}, _err
 	}
 
-	fmt.Print(fullSongs)
+	_merge_songs := []models.Song{}
 
-	// Fetch songs by release version
-	for _, _releaseVersion := range releaseVersions {
-		_fetchedSongs, _ := s.FetchSongsPerVersionId(_releaseVersion.ID)
-		mergeSongs(&fullSongs, _fetchedSongs)
-	}
-	return fullSongs, nil
+	_songs := mergeSongs(&fullSongs, _merge_songs)
+
+	return _songs, nil
 }
 
 // Fetch all sounds per version id for fetching release song of a certain `version Id`
@@ -81,32 +77,50 @@ func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, error) 
 }
 
 // Add into perform merge of song
-func mergeSongs(s *[]models.Song, sn []models.Song) {
-	for _, song := range sn {
-		for _, savedSong := range *s {
-			if song.ReleaseVersionId > savedSong.ReleaseVersionId && strings.EqualFold(song.Title, savedSong.Title) {
-				// Then add that item into the list
-				addSongInList(s, song)
-			}
-
-		}
-	}
-}
-
-// Merge song
-func addSongInList(s *[]models.Song, sn models.Song) {
-	_tempSngs := []models.Song{}
-
+func mergeSongs(s *[]models.Song, sn []models.Song) []models.Song {
 	for _, _song := range *s {
-		if _song.ID != sn.ID {
-			_tempSngs = append(_tempSngs, _song)
+		_status, _index := checkIfSongInSlice(sn, _song)
+
+		if _status {
+			if _song.ReleaseVersionId > sn[_index].ReleaseVersionId {
+				// Replace the existing song within the list
+				replaceSongs(sn, _song, _index)
+			}
+		} else {
+			sn = append(sn, _song)
 		}
 	}
-	_tempSngs = append(_tempSngs, sn)
 
-	// update the song slice
-	*s = _tempSngs
+	return sn
 }
+
+func checkIfSongInSlice(s []models.Song, song models.Song) (bool, int) {
+	for _i, _song := range s {
+		if _song.SongUniqueId == song.SongUniqueId {
+			return true, _i
+		}
+	}
+	return false, -1
+}
+
+func replaceSongs(s []models.Song, song models.Song, index int) {
+	s[index] = song
+}
+
+// // Merge song
+// func addSongInList(s *[]models.Song, sn models.Song) {
+// 	_tempSngs := []models.Song{}
+
+// 	for _, _song := range *s {
+// 		if _song.ID != sn.ID {
+// 			_tempSngs = append(_tempSngs, _song)
+// 		}
+// 	}
+// 	_tempSngs = append(_tempSngs, sn)
+
+// 	// update the song slice
+// 	*s = _tempSngs
+// }
 
 // Fetch all songs from storage
 func (s *MysqlSongDataAccessLayer) fetchAllSongs() ([]models.Song, error) {

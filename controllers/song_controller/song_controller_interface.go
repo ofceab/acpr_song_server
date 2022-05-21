@@ -16,6 +16,7 @@ type ISongController interface {
 	FetchSongsPerVersionId(c *gin.Context)
 	// Add song
 	AddSong(c *gin.Context)
+	UpdateSong(c *gin.Context)
 	// Delete song
 	DeleteSong(c *gin.Context)
 }

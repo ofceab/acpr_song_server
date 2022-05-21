@@ -11,6 +11,8 @@ import (
 type ISongDatabaseAccessLayer interface {
 	// Save song in store
 	SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error)
+	// Update song
+	UpdateSong(s *dataformat.UpdateSong, releaseVersion uint) (models.Song, error)
 	// Fetch songs
 	FetchSongs() ([]models.Song, error)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
