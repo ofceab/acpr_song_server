@@ -9,3 +9,9 @@ type CreateSong struct {
 	// Audio of the song
 	AudioUrl string `json:"audio_url"`
 }
+
+type UpdateSong struct {
+	CreateSong
+	// Unique song Id
+	SongUniqueId string `json:"song_unique_id"`
+}

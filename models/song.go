@@ -11,6 +11,8 @@ type Song struct {
 	Lyrics string `json:"lyrics"`
 	// Audio of the song
 	AudioUrl string `json:"audio_url"`
+	// Song unique Id
+	SongUniqueId string `json:"song_unique_id"`
 	// Release version
 	ReleaseVersionId uint           `json:"release_version_id"`
 	ReleaseVersion   ReleaseVersion `json:"release_version" gorm:"foreignKey:ReleaseVersionId"`

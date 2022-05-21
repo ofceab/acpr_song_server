@@ -3,9 +3,11 @@ package dal_interfaces
 import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/gofrs/uuid"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +20,12 @@ type MysqlSongDataAccessLayer struct {
 
 // Save song in store
 func (p *MysqlSongDataAccessLayer) SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error) {
-	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion, CreatedAt: time.Now()}
+	_songUUID, _err := uuid.NewV4()
+	if _err != nil {
+		return models.Song{}, _err
+	}
+
+	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion, CreatedAt: time.Now(), SongUniqueId: _songUUID.String()}
 	_result := p.DbConnection.Omit(OMIT_SONG_FIELD...).Create(&_s)
 	if _result.Error != nil {
 		return models.Song{}, _result.Error
@@ -32,11 +39,19 @@ func (s *MysqlSongDataAccessLayer) FetchSongs() ([]models.Song, error) {
 
 	// Fetch release version
 	releaseVersions, err := s.ReleaseVersionDal.FetchReleaseVersions()
+
 	if err != nil {
 		return []models.Song{}, err
 	}
 
-	fullSongs := []models.Song{}
+	// Retrieve all songs
+	fullSongs, _err := s.fetchAllSongs()
+
+	if _err != nil {
+		return []models.Song{}, _err
+	}
+
+	fmt.Print(fullSongs)
 
 	// Fetch songs by release version
 	for _, _releaseVersion := range releaseVersions {
@@ -91,4 +106,15 @@ func addSongInList(s *[]models.Song, sn models.Song) {
 
 	// update the song slice
 	*s = _tempSngs
+}
+
+// Fetch all songs from storage
+func (s *MysqlSongDataAccessLayer) fetchAllSongs() ([]models.Song, error) {
+	_songs := new([]models.Song)
+
+	_result := s.DbConnection.Find(_songs)
+	if _result.Error != nil {
+		return []models.Song{}, _result.Error
+	}
+	return *_songs, nil
 }

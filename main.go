@@ -8,9 +8,12 @@ import (
 	"acpr_songs_server/service/release_version_service"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gofrs/uuid"
 )
 
 func main() {
+	uuid.Must(uuid.NewV4())
+
 	_db := mysql.InitDb()
 	// init song controller
 
