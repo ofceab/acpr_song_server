@@ -28,6 +28,7 @@ func main() {
 	// Get songs take latest version of songs
 	v1 := router.Group("/v1")
 	{
+		// Get all song merged by version
 		v1.GET("/songs", _songController.FetchSongs)
 		// Get songs by release version
 		v1.GET("/songs/:releaseVersion", _songController.FetchSongsPerVersionId)
