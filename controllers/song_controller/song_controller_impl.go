@@ -17,6 +17,11 @@ type songControllerImpl struct {
 // Implementing ISongController
 
 func (s *songControllerImpl) FetchSongs(c *gin.Context) {
+	_songUUID := c.Query(constants.SONG_ID_KEY)
+	if _songUUID != "" {
+		s.FetchSongsPerSongUniqueId(c)
+		return
+	}
 	songs, err := s.songService.FetchSongs()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

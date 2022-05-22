@@ -35,8 +35,6 @@ func main() {
 		v1.GET("/songs", _songController.FetchSongs)
 		// Get songs by release version
 		v1.GET("/songs/:releaseVersion", _songController.FetchSongsPerVersionId)
-		// Get song by songUUID
-		v1.GET("/songs/:songUniqueId", _songController.FetchSongsPerSongUniqueId)
 		// Add songs on a certain release version
 		v1.POST("/songs/:releaseVersion", _songController.AddSong)
 		// Update song
