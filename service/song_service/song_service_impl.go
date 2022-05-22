@@ -24,6 +24,14 @@ func (s *songServiceImpl) FetchSongs() ([]models.Song, error) {
 	return songs, nil
 }
 
+func (s *songServiceImpl) FetchSongsPerSongUniqueId(snUID string) ([]models.Song, error) {
+	songs, err := s.songDal.FetchSongsPerSongUniqueId(snUID)
+	if err != nil {
+		return []models.Song{}, err
+	}
+	return songs, nil
+}
+
 func (s *songServiceImpl) UpdateSong(p *dataformat.UpdateSong, releaseVersion uint) (models.Song, error) {
 	// Retrieve first releases versions
 	_releaseVersions, _err := s.releaseVersionService.GetReleaseVersions()

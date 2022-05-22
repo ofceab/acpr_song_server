@@ -14,6 +14,8 @@ type ISongController interface {
 	FetchSongs(c *gin.Context)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
 	FetchSongsPerVersionId(c *gin.Context)
+	FetchSongsPerSongUniqueId(c *gin.Context)
+
 	// Add song
 	AddSong(c *gin.Context)
 	UpdateSong(c *gin.Context)

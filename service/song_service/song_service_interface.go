@@ -13,6 +13,8 @@ type ISongService interface {
 	FetchSongs() ([]models.Song, error)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
 	FetchSongsPerVersionId(sv uint) ([]models.Song, error)
+	// Fetch by SongUnique Id
+	FetchSongsPerSongUniqueId(snUID string) ([]models.Song, error)
 	// Add song with
 	AddSong(s *dataformat.CreateSong, relaseVersion uint) (models.Song, error)
 	// Update song

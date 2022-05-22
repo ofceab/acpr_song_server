@@ -42,6 +42,18 @@ func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
 	c.JSON(http.StatusOK, songs)
 }
 
+func (s *songControllerImpl) FetchSongsPerSongUniqueId(c *gin.Context) {
+	songUUID := c.Param(constants.SONG_UNIQUE_ID_KEY)
+
+	songs, err := s.songService.FetchSongsPerSongUniqueId(songUUID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	// Send result
+	c.JSON(http.StatusOK, songs)
+}
+
 func (s *songControllerImpl) AddSong(c *gin.Context) {
 	releaseVersion, _convErr := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
 	if _convErr != nil {

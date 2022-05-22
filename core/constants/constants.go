@@ -8,6 +8,8 @@ const ITEM_NOT_FOUND = "Item not found "
 // ReleaseVersion Key
 const RELEASE_VERSION_KEY = "releaseVersion"
 
+const SONG_UNIQUE_ID_KEY = "songUniqueId"
+
 // Song Id Key
 const SONG_ID_KEY = "songId"
 

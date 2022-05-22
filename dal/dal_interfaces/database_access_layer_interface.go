@@ -17,6 +17,8 @@ type ISongDatabaseAccessLayer interface {
 	FetchSongs() ([]models.Song, error)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
 	FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error)
+	// Fetch song by SongUnqueId
+	FetchSongsPerSongUniqueId(snUID string) ([]models.Song, error)
 	// Remove song
 	DeleteSong(songId uint) (models.Song, error)
 }
