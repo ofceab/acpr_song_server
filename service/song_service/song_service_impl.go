@@ -2,11 +2,13 @@ package song_service
 
 import (
 	"acpr_songs_server/core/constants"
+	"acpr_songs_server/core/errors"
 	"acpr_songs_server/dal/dal_interfaces"
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/release_version_service"
 	"fmt"
+	"net/http"
 )
 
 // An implementation of `ISongService`
@@ -16,27 +18,29 @@ type songServiceImpl struct {
 	releaseVersionService release_version_service.IReleaseVersionService
 }
 
-func (s *songServiceImpl) FetchSongs() ([]models.Song, error) {
+func (s *songServiceImpl) FetchSongs() ([]models.Song, errors.SongError) {
 	songs, err := s.songDal.FetchSongs()
-	if err != nil {
+	if err.ErrorCode != 0 {
 		return []models.Song{}, err
 	}
-	return songs, nil
+	return songs, err // the error in this case is returned as zero value
 }
 
-func (s *songServiceImpl) FetchSongsPerSongUniqueId(snUID string) ([]models.Song, error) {
+func (s *songServiceImpl) FetchSongsPerSongUniqueId(snUID string) ([]models.Song, errors.SongError) {
+	fmt.Println(snUID)
+	fmt.Println("Obed")
 	songs, err := s.songDal.FetchSongsPerSongUniqueId(snUID)
-	if err != nil {
+	if err.ErrorCode != 0 {
 		return []models.Song{}, err
 	}
-	return songs, nil
+	return songs, err
 }
 
-func (s *songServiceImpl) UpdateSong(p *dataformat.UpdateSong, releaseVersion uint) (models.Song, error) {
+func (s *songServiceImpl) UpdateSong(p *dataformat.UpdateSong, releaseVersion uint) (models.Song, errors.SongError) {
 	// Retrieve first releases versions
 	_releaseVersions, _err := s.releaseVersionService.GetReleaseVersions()
-	if _err != nil {
-		return models.Song{}, _err
+	if _err.ErrorCode != 0 {
+		return models.Song{}, errors.SongError(_err)
 	}
 
 	_rvExist := false
@@ -47,49 +51,49 @@ func (s *songServiceImpl) UpdateSong(p *dataformat.UpdateSong, releaseVersion ui
 	}
 
 	if !_rvExist {
-		return models.Song{}, fmt.Errorf("release version provided doesn't exist")
+		return models.Song{}, errors.SongError{Message: errors.RELEASE_VERSION__OF_ID_DOESNT_EXIST_ERROR, ErrorCode: http.StatusBadRequest}
 	}
 
 	song, err := s.songDal.UpdateSong(p, releaseVersion)
-	if err != nil {
+	if err.ErrorCode != 0 {
 		return models.Song{}, err
 	}
-	return song, nil
+	return song, err
 }
 
-func (s *songServiceImpl) FetchSongsPerVersionId(sv uint) ([]models.Song, error) {
+func (s *songServiceImpl) FetchSongsPerVersionId(sv uint) ([]models.Song, errors.SongError) {
 	_songs, err := s.songDal.FetchSongsPerVersionId(sv)
 
-	if err != nil {
+	if err.ErrorCode != 0 {
 		return []models.Song{}, err
 	}
-	return _songs, nil
+	return _songs, err
 }
 
-func (s *songServiceImpl) AddSong(sn *dataformat.CreateSong, releaseVersion uint) (models.Song, error) {
+func (s *songServiceImpl) AddSong(sn *dataformat.CreateSong, releaseVersion uint) (models.Song, errors.SongError) {
 
 	if releaseVersion == constants.LATEST_RELEASE_KEY {
 		_r, err := s.releaseVersionService.GetLatestReleaseVersion()
-		if err != nil {
-			return models.Song{}, err
+		if err.ErrorCode != 0 {
+			return models.Song{}, errors.SongError(err)
 		}
 		_sn, _err := s.songDal.SaveSong(sn, _r.ID)
-		if _err != nil {
+		if _err.ErrorCode != 0 {
 			return models.Song{}, _err
 		}
-		return _sn, nil
+		return _sn, _err
 	}
 	_s, _err := s.songDal.SaveSong(sn, releaseVersion)
-	if _err != nil {
+	if _err.ErrorCode != 0 {
 		return models.Song{}, _err
 	}
-	return _s, nil
+	return _s, _err
 }
 
-func (s *songServiceImpl) DeleteSong(sId uint) (models.Song, error) {
+func (s *songServiceImpl) DeleteSong(sId uint) (models.Song, errors.SongError) {
 	_s, _err := s.songDal.DeleteSong(sId)
-	if _err != nil {
+	if _err.ErrorCode != 0 {
 		return models.Song{}, _err
 	}
-	return _s, nil
+	return _s, _err
 }

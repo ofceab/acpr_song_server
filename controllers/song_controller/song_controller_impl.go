@@ -2,8 +2,11 @@ package song_controller
 
 import (
 	"acpr_songs_server/core/constants"
+	"acpr_songs_server/core/errors"
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/service/song_service"
+	"acpr_songs_server/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -17,14 +20,16 @@ type songControllerImpl struct {
 // Implementing ISongController
 
 func (s *songControllerImpl) FetchSongs(c *gin.Context) {
-	_songUUID := c.Query(constants.SONG_ID_KEY)
+	_songUUID := c.Query(constants.SONG_UNIQUE_ID_KEY)
 	if _songUUID != "" {
-		s.FetchSongsPerSongUniqueId(c)
+		s.FetchSongsPerSongUniqueId(c.Copy())
 		return
 	}
 	songs, err := s.songService.FetchSongs()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	fmt.Println(songs)
+	fmt.Println(err)
+	if err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(err))
 		return
 	}
 	// Send result
@@ -39,8 +44,8 @@ func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
 	}
 
 	songs, err := s.songService.FetchSongsPerVersionId(uint(reVersion))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(err))
 		return
 	}
 	// Send result
@@ -50,9 +55,12 @@ func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
 func (s *songControllerImpl) FetchSongsPerSongUniqueId(c *gin.Context) {
 	songUUID := c.Param(constants.SONG_UNIQUE_ID_KEY)
 
+	fmt.Println(songUUID)
+
 	songs, err := s.songService.FetchSongsPerSongUniqueId(songUUID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	fmt.Println(err)
+	if err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(err))
 		return
 	}
 	// Send result
@@ -73,8 +81,8 @@ func (s *songControllerImpl) AddSong(c *gin.Context) {
 	}
 
 	result, _err := s.songService.AddSong(&songData, uint(releaseVersion))
-	if _err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
+	if _err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(_err))
 		return
 	}
 	c.JSON(http.StatusCreated, result)
@@ -88,13 +96,13 @@ func (s *songControllerImpl) UpdateSong(c *gin.Context) {
 
 	var songData dataformat.UpdateSong
 	if err := c.ShouldBindJSON(&songData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		utils.SendResponse(c, errors.AppError{Message: err.Error(), ErrorCode: http.StatusBadRequest})
 		return
 	}
 
 	result, _err := s.songService.UpdateSong(&songData, uint(releaseVersion))
-	if _err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
+	if _err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(_err))
 		return
 	}
 	c.JSON(http.StatusOK, result)
@@ -108,8 +116,8 @@ func (s *songControllerImpl) DeleteSong(c *gin.Context) {
 	}
 
 	result, _err := s.songService.DeleteSong(uint(songId))
-	if _err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": _err.Error()})
+	if _err.ErrorCode != 0 {
+		utils.SendResponse(c, errors.AppError(_err))
 		return
 	}
 	c.JSON(http.StatusCreated, result)

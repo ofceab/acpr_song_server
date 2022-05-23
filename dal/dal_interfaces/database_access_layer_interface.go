@@ -1,6 +1,7 @@
 package dal_interfaces
 
 import (
+	"acpr_songs_server/core/errors"
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 
@@ -10,31 +11,31 @@ import (
 // Define interfaction for getting song or deal with the song database
 type ISongDatabaseAccessLayer interface {
 	// Save song in store
-	SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, error)
+	SaveSong(s *dataformat.CreateSong, releaseVersion uint) (models.Song, errors.SongError)
 	// Update song
-	UpdateSong(s *dataformat.UpdateSong, releaseVersion uint) (models.Song, error)
+	UpdateSong(s *dataformat.UpdateSong, releaseVersion uint) (models.Song, errors.SongError)
 	// Fetch songs
-	FetchSongs() ([]models.Song, error)
+	FetchSongs() ([]models.Song, errors.SongError)
 	// Fetch all sounds per version id for fetching release song of a certain `version Id`
-	FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, error)
+	FetchSongsPerVersionId(releaseVersion uint) ([]models.Song, errors.SongError)
 	// Fetch song by SongUnqueId
-	FetchSongsPerSongUniqueId(snUID string) ([]models.Song, error)
+	FetchSongsPerSongUniqueId(snUID string) ([]models.Song, errors.SongError)
 	// Remove song
-	DeleteSong(songId uint) (models.Song, error)
+	DeleteSong(songId uint) (models.Song, errors.SongError)
 }
 
 // Define method in use for access song database
 type IReleaseVersionDatabaseAccessLayer interface {
 	// Create a ReleaseVersion
-	CreateReleaseVersion() (models.ReleaseVersion, error)
+	CreateReleaseVersion() (models.ReleaseVersion, errors.ReleaseVersionError)
 	// Fetch all release version
-	FetchReleaseVersions() ([]models.ReleaseVersion, error)
+	FetchReleaseVersions() ([]models.ReleaseVersion, errors.ReleaseVersionError)
 	// Delete a particular release version
-	DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, error)
+	DeleteReleaseVersion(releaseVersion uint) (models.ReleaseVersion, errors.ReleaseVersionError)
 	// Fetch release version per Id
-	FetchReleaseVersionById(id uint) (models.ReleaseVersion, error)
+	FetchReleaseVersionById(id uint) (models.ReleaseVersion, errors.ReleaseVersionError)
 	// Fetch latest Release Version
-	FetchLatestReleaseVersion() (models.ReleaseVersion, error)
+	FetchLatestReleaseVersion() (models.ReleaseVersion, errors.ReleaseVersionError)
 }
 
 func NewIReleaseVersionDatabaseAccessLayer(db *gorm.DB) IReleaseVersionDatabaseAccessLayer {

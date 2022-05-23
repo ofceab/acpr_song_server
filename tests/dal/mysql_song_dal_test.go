@@ -15,7 +15,7 @@ func TestSaveSong(t *testing.T) {
 
 	_tempSongData := dataformat.CreateSong{Title: "Alleluia", Lyrics: "Hosana", AudioUrl: ""}
 	_r, err := _d.SaveSong(&_tempSongData, 21)
-	if err != nil {
+	if err.ErrorCode != 0 {
 		t.Error(err)
 	}
 	fmt.Println(_r)
