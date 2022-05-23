@@ -6,7 +6,6 @@ import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/service/song_service"
 	"acpr_songs_server/utils"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,12 +21,10 @@ type songControllerImpl struct {
 func (s *songControllerImpl) FetchSongs(c *gin.Context) {
 	_songUUID := c.Query(constants.SONG_UNIQUE_ID_KEY)
 	if _songUUID != "" {
-		s.FetchSongsPerSongUniqueId(c.Copy())
+		s.FetchSongsPerSongUniqueId(*c)
 		return
 	}
 	songs, err := s.songService.FetchSongs()
-	fmt.Println(songs)
-	fmt.Println(err)
 	if err.ErrorCode != 0 {
 		utils.SendResponse(c, errors.AppError(err))
 		return
@@ -52,18 +49,16 @@ func (s *songControllerImpl) FetchSongsPerVersionId(c *gin.Context) {
 	c.JSON(http.StatusOK, songs)
 }
 
-func (s *songControllerImpl) FetchSongsPerSongUniqueId(c *gin.Context) {
-	songUUID := c.Param(constants.SONG_UNIQUE_ID_KEY)
-
-	fmt.Println(songUUID)
+func (s *songControllerImpl) FetchSongsPerSongUniqueId(c gin.Context) {
+	songUUID := c.Query(constants.SONG_UNIQUE_ID_KEY)
 
 	songs, err := s.songService.FetchSongsPerSongUniqueId(songUUID)
-	fmt.Println(err)
+
 	if err.ErrorCode != 0 {
-		utils.SendResponse(c, errors.AppError(err))
+		utils.SendResponse(&c, errors.AppError(err))
 		return
 	}
-	// Send result
+
 	c.JSON(http.StatusOK, songs)
 }
 
@@ -120,5 +115,5 @@ func (s *songControllerImpl) DeleteSong(c *gin.Context) {
 		utils.SendResponse(c, errors.AppError(_err))
 		return
 	}
-	c.JSON(http.StatusCreated, result)
+	c.JSON(http.StatusOK, result)
 }

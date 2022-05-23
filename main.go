@@ -1,6 +1,7 @@
 package main
 
 import (
+	notfoundcontroller "acpr_songs_server/controllers/not_found_controller"
 	"acpr_songs_server/controllers/release_version_controller"
 	"acpr_songs_server/controllers/song_controller"
 	"acpr_songs_server/dal/dal_interfaces"
@@ -55,5 +56,7 @@ func main() {
 		v1.DELETE("/releaseVersions/:releaseVersionId", _releaseVersionController.DeleteReleaseVersion)
 	}
 
-	router.Run(":8081")
+	router.NoRoute(notfoundcontroller.NoFoundRouteHandler)
+
+	router.Run(":8082")
 }

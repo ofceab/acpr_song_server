@@ -21,7 +21,7 @@ type ISongDatabaseAccessLayer interface {
 	// Fetch song by SongUnqueId
 	FetchSongsPerSongUniqueId(snUID string) ([]models.Song, errors.SongError)
 	// Remove song
-	DeleteSong(songId uint) (models.Song, errors.SongError)
+	DeleteSong(songId uint) (dataformat.DeletedSong, errors.SongError)
 }
 
 // Define method in use for access song database

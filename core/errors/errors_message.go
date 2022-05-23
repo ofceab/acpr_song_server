@@ -12,6 +12,8 @@ const (
 
 	RELEASE_VERSION__OF_ID_DOESNT_EXIST_ERROR = "releaseVersion with provided id doesnt exist"
 	RELEASE_VERSION_DOESNT_EXIST_ERROR        = "no release version yet, retry later"
+
+	ROUTE_NOT_FOUND = "route you tried to reach is not found. Be sure of the path"
 )
 
 func GetInternalError() AppError {

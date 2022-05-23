@@ -4,7 +4,6 @@ import (
 	"acpr_songs_server/core/errors"
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -121,7 +120,6 @@ func (s *MysqlSongDataAccessLayer) FetchSongsPerVersionId(releaseVersion uint) (
 // Fetch all sounds per version id for fetching release song of a certain `version Id`
 func (s *MysqlSongDataAccessLayer) FetchSongsPerSongUniqueId(snUID string) ([]models.Song, errors.SongError) {
 	songs := new([]models.Song)
-	fmt.Println(snUID)
 	_r := s.DbConnection.Find(songs, models.Song{SongUniqueId: snUID})
 	if _r.Error != nil {
 		return []models.Song{}, errors.SongError(errors.GetInternalError())
@@ -129,13 +127,13 @@ func (s *MysqlSongDataAccessLayer) FetchSongsPerSongUniqueId(snUID string) ([]mo
 	return *songs, errors.SongError{}
 }
 
-func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (models.Song, errors.SongError) {
+func (s *MysqlSongDataAccessLayer) DeleteSong(songId uint) (dataformat.DeletedSong, errors.SongError) {
 	newSong := new(models.Song)
 	_r := s.DbConnection.Delete(newSong, songId)
 	if _r.RowsAffected == 0 {
-		return models.Song{}, errors.SongError{Message: errors.SONG_TO_DELETE_DOESNT_EXIST_ERROR, ErrorCode: http.StatusBadRequest}
+		return dataformat.DeletedSong{}, errors.SongError{Message: errors.SONG_TO_DELETE_DOESNT_EXIST_ERROR, ErrorCode: http.StatusBadRequest}
 	}
-	return *newSong, errors.SongError{}
+	return dataformat.DeletedSong{SongId: songId}, errors.SongError{}
 }
 
 // Add into perform merge of song

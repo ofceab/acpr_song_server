@@ -15,3 +15,7 @@ type UpdateSong struct {
 	// Unique song Id
 	SongUniqueId string `json:"song_unique_id" binding:"required"`
 }
+
+type DeletedSong struct {
+	SongId uint
+}

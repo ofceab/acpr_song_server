@@ -7,7 +7,6 @@ import (
 	dataformat "acpr_songs_server/data_format"
 	"acpr_songs_server/models"
 	"acpr_songs_server/service/release_version_service"
-	"fmt"
 	"net/http"
 )
 
@@ -27,8 +26,6 @@ func (s *songServiceImpl) FetchSongs() ([]models.Song, errors.SongError) {
 }
 
 func (s *songServiceImpl) FetchSongsPerSongUniqueId(snUID string) ([]models.Song, errors.SongError) {
-	fmt.Println(snUID)
-	fmt.Println("Obed")
 	songs, err := s.songDal.FetchSongsPerSongUniqueId(snUID)
 	if err.ErrorCode != 0 {
 		return []models.Song{}, err
@@ -90,10 +87,10 @@ func (s *songServiceImpl) AddSong(sn *dataformat.CreateSong, releaseVersion uint
 	return _s, _err
 }
 
-func (s *songServiceImpl) DeleteSong(sId uint) (models.Song, errors.SongError) {
+func (s *songServiceImpl) DeleteSong(sId uint) (dataformat.DeletedSong, errors.SongError) {
 	_s, _err := s.songDal.DeleteSong(sId)
 	if _err.ErrorCode != 0 {
-		return models.Song{}, _err
+		return dataformat.DeletedSong{}, _err
 	}
 	return _s, _err
 }

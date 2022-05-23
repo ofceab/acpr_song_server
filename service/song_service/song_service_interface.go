@@ -21,7 +21,7 @@ type ISongService interface {
 	// Update song
 	UpdateSong(s *dataformat.UpdateSong, releaseVersion uint) (models.Song, errors.SongError)
 	// Remove song from a certain release
-	DeleteSong(sId uint) (models.Song, errors.SongError)
+	DeleteSong(sId uint) (dataformat.DeletedSong, errors.SongError)
 }
 
 func New(songDal dal_interfaces.ISongDatabaseAccessLayer, releaseVersionService release_version_service.IReleaseVersionService) ISongService {
