@@ -35,11 +35,11 @@ func main() {
 		// Get all song merged by version
 		v1.GET("/songs", _songController.FetchSongs)
 		// Get songs by release version
-		v1.GET("/songs/:releaseVersion", _songController.FetchSongsPerVersionId)
+		v1.GET("/songs/:releaseVersionId", _songController.FetchSongsPerVersionId)
 		// Add songs on a certain release version
-		v1.POST("/songs/:releaseVersion", _songController.AddSong)
+		v1.POST("/songs/:releaseVersionId", _songController.AddSong)
 		// Update song
-		v1.PATCH("/songs/:releaseVersion", _songController.UpdateSong)
+		v1.PATCH("/songs/:releaseVersionId", _songController.UpdateSong)
 		// Delete songs based on songId
 		v1.DELETE("/songs/:songId", _songController.DeleteSong)
 
@@ -49,7 +49,7 @@ func main() {
 		// Get latest release version
 		v1.GET("/releaseVersions/latest", _releaseVersionController.GetLatestReleaseVersion)
 		// Get release version info based on id
-		v1.GET("/releaseVersions/:releaseVersion", _releaseVersionController.GetReleaseVersionById)
+		v1.GET("/releaseVersions/:releaseVersionId", _releaseVersionController.GetReleaseVersionById)
 		// Create a release version
 		v1.POST("/releaseVersions", _releaseVersionController.CreateReleaseVersion)
 		// Delete a release version

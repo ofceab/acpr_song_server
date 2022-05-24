@@ -65,7 +65,7 @@ func (s *songControllerImpl) FetchSongsPerSongUniqueId(c gin.Context) {
 func (s *songControllerImpl) AddSong(c *gin.Context) {
 	releaseVersion, _convErr := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
 	if _convErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid releaseVersion"})
+		c.JSON(401, gin.H{"error": "Invalid releaseVersion"})
 		return
 	}
 
@@ -85,7 +85,7 @@ func (s *songControllerImpl) AddSong(c *gin.Context) {
 func (s *songControllerImpl) UpdateSong(c *gin.Context) {
 	releaseVersion, _convErr := strconv.ParseUint(c.Param(constants.RELEASE_VERSION_KEY), 10, 32)
 	if _convErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid releaseVersion"})
+		c.JSON(401, gin.H{"error": "Invalid releaseVersion"})
 		return
 	}
 
@@ -100,13 +100,13 @@ func (s *songControllerImpl) UpdateSong(c *gin.Context) {
 		utils.SendResponse(c, errors.AppError(_err))
 		return
 	}
-	c.JSON(http.StatusOK, result)
+	c.JSON(http.StatusCreated, result)
 }
 
 func (s *songControllerImpl) DeleteSong(c *gin.Context) {
 	songId, _conErr := strconv.ParseUint(c.Param(constants.SONG_ID_KEY), 10, 32)
 	if _conErr != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid songId"})
+		c.JSON(402, gin.H{"error": "Invalid songId"})
 		return
 	}
 

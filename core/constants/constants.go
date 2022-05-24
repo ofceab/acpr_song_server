@@ -6,7 +6,7 @@ const EMPTY_SPACE = ""
 const ITEM_NOT_FOUND = "Item not found "
 
 // ReleaseVersion Key
-const RELEASE_VERSION_KEY = "releaseVersion"
+const RELEASE_VERSION_KEY = "releaseVersionId"
 
 const SONG_UNIQUE_ID_KEY = "song_unique_id"
 

@@ -17,16 +17,29 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  type: object
-                  required:
-                    - id
-                  properties:
-                    id:
-                      type: string
-                    created_at:
-                      type: string
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      required:
+                        - id
+                      properties:
+                        id:
+                          type: string
+                        created_at:
+                          type: string
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
     post:
       description: Create a new release version
       responses:
@@ -37,31 +50,64 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  created_at:
-                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      created_at:
+                        type: string
 
   /v1/releaseVersions/latest:
     get:
       description: Get latest release version
       responses:
-        "200":
+        200:
           description: Successfully returned latest release version
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  created_at:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      created_at:
+                        type: string
+
+        204:
+          description: No latest release release for now
+
+  /v1/releaseVersions/{releaseVersionId}:
+    get:
+      description: Get release version having `releaseVersionId`
+      responses:
+        200:
+          description: Successfully returned releaseVersion having the id provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      created_at:
+                        type: string
+        204:
+          description: No releaseVersion found with the provided `id`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
                     type: string
 
-        "204":
-          description: No latest release release for now
-          
-  /v1/releaseVersions/{releaseVersionId}:
     delete:
       description: Delete release version having the passed id
       responses:
@@ -72,10 +118,327 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
-                  created_at:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      created_at:
+                        type: string
+        400:
+          description: Bad request. The `id` you provided don't match with any releaseVersion.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
                     type: string
 
-        204:
-          description: Unsuccessfully deleted release version, 'Cause no release version having the passed Id
+  /v1/songs:
+    get:
+      description: Fetch all songs. Keep in mind that this set of songs is the latest version of each songs
+      responses:
+        200:
+          description: Successfully returned songs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        lyrics:
+                          type: string
+                        audio_url:
+                          type: string
+                        song_unique_id:
+                          description: This identifier `song_unique_id` is an identifier to keep track of version of song. It's required for adding new version for a song
+                          type: string
+                        release_version_id:
+                          type: integer
+                        created_at:
+                          type: string
+
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /v1/songs?song_unique_id=:
+    get:
+      description: Fetch all songs that match `song_unique_id`
+      responses:
+        200:
+          description: Successfully returned songs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        lyrics:
+                          type: string
+                        audio_url:
+                          type: string
+                        song_unique_id:
+                          description: This identifier `song_unique_id` is an identifier to keep track of version of song. It's required for adding new version for a song
+                          type: string
+                        release_version_id:
+                          type: integer
+                        created_at:
+                          type: string
+
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /v1/songs/{releaseVersionId}:
+    get:
+      description: Get songs having `releaseVersionId` as id
+      responses:
+        200:
+          description: Successfully returned songs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      properties:
+                        id:
+                          type: string
+                        title:
+                          type: string
+                        lyrics:
+                          type: string
+                        audio_url:
+                          type: string
+                        song_unique_id:
+                          description: This identifier `song_unique_id` is an identifier to keep track of version of song. It's required for adding new version for a song
+                          type: string
+                        release_version_id:
+                          type: integer
+                        created_at:
+                          type: string
+
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    post:
+      description: Create a new song within the `releaseVersion` group you provided.
+      responses:
+        201:
+          description: Successfully created song within the releaseVersion id provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      lyrics:
+                        type: string
+                      audio_url:
+                        type: string
+                      song_unique_id:
+                        description: This identifier `song_unique_id` is an identifier to keep track of version of song. It's required for adding new version for a song
+                        type: string
+                      release_version_id:
+                        type: integer
+                      created_at:
+                        type: string
+        400:
+          description: Body provided is invalid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        401:
+          description: Invalid `releaseVersionId`. Provided a number value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        402:
+          description: The `releaseVersionId` provided doesn't exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    patch:
+      description: Add a new version of an existing song within the `releaseVersion` group you provided.
+      responses:
+        201:
+          description: Successfully add new version of song within the releaseVersion group provided
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      lyrics:
+                        type: string
+                      audio_url:
+                        type: string
+                      song_unique_id:
+                        description: This identifier `song_unique_id` is an identifier to keep track of version of song. It's required for adding new version for a song
+                        type: string
+                      release_version_id:
+                        type: integer
+                      created_at:
+                        type: string
+        400:
+          description: Body provided is invalid. Provide require fields in the body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        401:
+          description: Invalid `releaseVersionId`. Provided a number value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        402:
+          description: The `releaseVersionId` provided doesn't exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        405:
+          description: provide a higher version for adding a new version of a song.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        406:
+          description: invalid song_unique_id. can't add a new version for a song that doesn't exist.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+        500:
+          description: An internal error occured on the server
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /v1/songs/{songId}:
+    delete:
+      description: Delete song having id as `songId`
+      responses:
+        200:
+          description: Song deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      song_id:
+                        description: id of the deleted song
+                        type: string
+
+        400:
+          description: No Song found with `songId`
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        402:
+          description: Invalid `songId`. Provide a number value
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string

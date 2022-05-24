@@ -9,7 +9,7 @@ import (
 // Send response
 func SendResponse(c *gin.Context, msg errors.AppError) {
 	if msg.ErrorCode < 300 && msg.ErrorCode >= 200 {
-		c.JSON(msg.ErrorCode, msg.Error())
+		c.JSON(msg.ErrorCode, gin.H{"data": msg.Error()})
 		return
 	}
 	c.JSON(msg.ErrorCode, gin.H{"error": msg.Error()})

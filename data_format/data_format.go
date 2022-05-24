@@ -17,5 +17,5 @@ type UpdateSong struct {
 }
 
 type DeletedSong struct {
-	SongId uint
+	SongId uint `json:"song_id"`
 }

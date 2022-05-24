@@ -61,9 +61,9 @@ func (p *MysqlSongDataAccessLayer) UpdateSong(s *dataformat.UpdateSong, releaseV
 	// Check if a song can be add / check if provided version is high that existing
 	_status := compareSongReleaseVersion(_songs, releaseVersion, s.SongUniqueId)
 	if _status == cannotBeAdd {
-		return models.Song{}, errors.SongError{Message: errors.NOT_HIGHER_RELEASE_VERSION_PROVIDED_ERROR, ErrorCode: http.StatusBadRequest}
+		return models.Song{}, errors.SongError{Message: errors.NOT_HIGHER_RELEASE_VERSION_PROVIDED_ERROR, ErrorCode: 405}
 	} else if _status == doesntExist {
-		return models.Song{}, errors.SongError{Message: errors.SONG_TO_UPDATE_DONT_EXIST_ERROR, ErrorCode: http.StatusBadRequest}
+		return models.Song{}, errors.SongError{Message: errors.SONG_TO_UPDATE_DONT_EXIST_ERROR, ErrorCode: 406}
 	}
 
 	_s := models.Song{Title: s.Title, Lyrics: s.Lyrics, AudioUrl: s.AudioUrl, ReleaseVersionId: releaseVersion, CreatedAt: time.Now(), SongUniqueId: s.SongUniqueId}
@@ -173,7 +173,7 @@ func (p *MysqlSongDataAccessLayer) checkExistenceOfVersionRelease(rv uint) error
 
 	_status, _ := checkIfReleaseVersionInSlice(_releasesVersions, rv)
 	if !_status {
-		return errors.SongError{Message: errors.INVALID_RELEASE_VERSION_ERROR, ErrorCode: http.StatusBadRequest}
+		return errors.SongError{Message: errors.INVALID_RELEASE_VERSION_ERROR, ErrorCode: 402}
 	}
 	return errors.SongError{}
 }
